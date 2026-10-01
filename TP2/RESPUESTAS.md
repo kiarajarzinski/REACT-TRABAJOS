@@ -288,3 +288,67 @@ Regla práctica: si la pantalla debe **mantener visible** la barra de pestañas,
 **d)** `router.back()` actúa en el navegador **más interno que está en foco** (el activo). Si ese navegador no puede retroceder (está en su primera pantalla), la acción pasa al navegador padre.
 
 ---
+## Parte E · Rutas dinámicas, parámetros y hooks
+
+### E1. Encontrá el error
+
+**Por qué falla:** los parámetros de ruta siempre llegan como texto. `id` vale `"3"` (string), pero en los productos `p.id` es el número `3`. Como `===` no convierte tipos, `3 === "3"` es `false` y `find` nunca encuentra nada. Por la misma razón, `id === 3` nunca se cumple.
+
+**Corrección:** convertir el parámetro a número antes de comparar.
+
+```tsx
+export default function DetalleProducto() {
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const idNumero = Number(id);
+  const producto = productos.find((p) => p.id === idNumero);
+
+  if (idNumero === 3) console.log('Es el chipá');
+  if (!producto) return <Text>No existe el producto {id}</Text>;
+  return <Text>{producto.nombre}</Text>;
+}
+```
+
+### E2. Catch-all
+
+Para `src/app/docs/[...slug].tsx`:
+
+| URL | `slug` |
+|---|---|
+| `/docs/react` | `["react"]` |
+| `/docs/react/hooks/useState` | `["react", "hooks", "useState"]` |
+| `/docs` | No hay segmentos que capturar: esa URL la atiende `docs/index.tsx` (si existe). |
+
+### E3. Anatomía de una URL
+
+URL: `rutasipf://buscar?q=mate&categoria=bebidas`
+
+**a)**
+- **Scheme:** `rutasipf`
+- **Ruta:** `/buscar`
+- **Parámetros de búsqueda:** `q=mate` y `categoria=bebidas`
+
+**b)** `useLocalSearchParams()` devuelve `{ q: "mate", categoria: "bebidas" }` (valores como texto).
+
+**c)** No hacen falta corchetes. Los corchetes sirven para **segmentos dinámicos de la ruta** (la parte del path). Los parámetros de búsqueda van después del `?`, no forman parte de la ruta y llegan a cualquier pantalla.
+
+**d)** Dos razones para usar `router.setParams` en lugar de `router.push`:
+1. **No apila pantallas:** con `push`, cada letra tipeada agregaría una pantalla a la pila y el usuario tendría que tocar "atrás" decenas de veces para salir del buscador. Con `setParams` se actualiza la misma pantalla.
+2. **Mantiene la pantalla y la URL sincronizadas:** el campo de texto no se vuelve a montar (no pierde el foco) y la URL siempre refleja la búsqueda actual, por lo que se puede compartir como link.
+
+### E4. ¿Dónde estoy?
+
+`buscar.tsx` está en el Stack raíz; el detalle está en `(tabs)/productos/[id].tsx`.
+
+| Hook | En `/productos/3` | En `/buscar?q=chipa` |
+|---|---|---|
+| `usePathname()` | `"/productos/3"` | `"/buscar"` |
+| `useSegments()` | `["(tabs)", "productos", "[id]"]` | `["buscar"]` |
+| `useLocalSearchParams()` | `{ id: "3" }` | `{ q: "chipa" }` |
+
+### E5. Local vs global
+
+**a)** `useLocalSearchParams` devuelve los parámetros de la pantalla donde se la llama y solo se actualiza cuando esa pantalla está en foco. `useGlobalSearchParams` devuelve los parámetros de la URL actual de toda la app, y cambia aunque la pantalla no esté enfocada. La opción por defecto es `useLocalSearchParams`, porque en un Stack las pantallas de abajo siguen montadas: con la versión global se volverían a renderizar (y podrían confundirse) cada vez que cambia la URL de otra pantalla.
+
+**b)** `useFocusEffect` ejecuta un efecto cada vez que la pantalla gana el foco, no solo cuando se monta, y limpia al perder el foco. Sirve porque en Stack y Tabs las pantallas quedan montadas aunque no se vean. Ejemplo: volver a pedir la lista de pedidos cada vez que el usuario entra a la tab "Carrito".   
+
+**c)** No es un error de Expo Router. `[id].tsx` acepta cualquier valor en ese segmento, porque el router solo sabe que la URL coincide con el patrón. La responsabilidad es del desarrollador: validar el parámetro dentro de la pantalla y mostrar un mensaje si el producto no existe.
