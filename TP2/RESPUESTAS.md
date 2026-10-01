@@ -120,3 +120,42 @@ class ColaEficiente {
 **b)** Las acciones de navegación se procesan en una **cola** (FIFO). Si el usuario toca dos links muy rápido, las dos acciones se encolan y se ejecutan **en orden de llegada**: primero se resuelve la primera y después la segunda. No se pisan ni se pierde ninguna.
 
 ---
+
+## Parte B · Rutas basadas en archivos
+
+### B1. Del archivo a la URL
+
+| Archivo | URL que genera / función |
+|---|---|
+| `src/app/(tabs)/index.tsx` | `/`. El grupo `(tabs)` no aparece en la URL, así que es la pantalla de inicio (tab "Inicio"). |
+| `src/app/acerca.tsx` | `/acerca` |
+| `src/app/(tabs)/perfil.tsx` | `/perfil` (otra vez sin `(tabs)` en la URL) |
+| `src/app/(tabs)/productos/index.tsx` | `/productos` (el `index` representa la raíz de la carpeta) |
+| `src/app/(tabs)/productos/[id].tsx` | `/productos/3`, `/productos/mate`, etc. Ruta dinámica: `id` llega como parámetro. |
+| `src/app/docs/[...slug].tsx` | `/docs/react`, `/docs/react/hooks/useState`, etc. Catch-all: captura cualquier cantidad de segmentos después de `/docs`. |
+| `src/app/_layout.tsx` | **No genera URL.** Define el navegador (por ejemplo un `Stack`) que envuelve a las pantallas de esa carpeta. |
+| `src/app/+not-found.tsx` | **No tiene URL propia.** Es la pantalla 404 que se muestra cuando ninguna ruta coincide. |
+| `src/app/Boton.tsx` | **Problema.** Todo archivo dentro de `app` se convierte en ruta, así que esto crea `/Boton`. Un componente va en `src/components/Boton.tsx`. |
+
+### B2. De la URL al archivo
+
+| URL | Archivo |
+|---|---|
+| `/categorias/bebidas` (y cualquier otra categoría) | `src/app/categorias/[categoria].tsx` |
+| `/buscar?q=mate&categoria=kiosco` | `src/app/buscar.tsx`. Los parámetros de búsqueda (`?q=...`) no necesitan carpeta ni corchetes. |
+| `/ayuda/pagos/tarjeta` y `/ayuda/horarios` | `src/app/ayuda/[...slug].tsx` |
+| `/ayuda` (con una pantalla propia) | `src/app/ayuda/index.tsx` |
+
+
+### B3. Verdadero o falso
+
+- **a) Falso** Expo Router usa rutas basadas en archivos: crear el archivo en `src/app` alcanza, no hay tabla de registro.
+- **b) Falso** Los `_layout.tsx` no son pantallas; definen el navegador (Stack, Tabs, Drawer) que contiene a las pantallas.
+- **c) Verdadero** 
+- **d) Falso** Conviene `npx expo install`, que elige la versión compatible con el SDK instalado. `npm install` trae la última, que puede ser incompatible con el SDK.
+- **e) Verdadero** 
+- **f) Verdadero** 
+- **g) Verdadero** 
+- **h) Verdadero**
+
+---
