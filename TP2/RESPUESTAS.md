@@ -159,3 +159,81 @@ class ColaEficiente {
 - **h) Verdadero**
 
 ---
+
+## Parte C · Navegar: `<Link>`, `router` y la pila
+
+### C1. Métodos de `router`
+
+| Método | Qué le hace a la pila |
+|---|---|
+| `router.push(href)` | Apila una pantalla nueva encima del tope, **siempre**, aunque esa misma ruta ya exista en la pila. |
+| `router.navigate(href)` | Va a la ruta evitando duplicados: si esa URL ya está en la pila, vuelve a ella (descarta las de arriba); si no está, la apila. |
+| `router.replace(href)` | **Reemplaza** la pantalla del tope por la nueva. La pila mantiene el mismo tamaño y no se puede volver a la reemplazada. |
+| `router.back()` | Hace `pop`: saca la pantalla del tope y queda visible la de abajo. |
+| `router.dismissTo(href)` | Desapila hasta llegar a la pantalla indicada si ya está en la pila; si no está, la apila. |
+| `router.dismissAll()` | Descarta todas las pantallas y deja solo la primera (la base) de la pila. |
+| `router.canGoBack()` | **No modifica la pila.** Devuelve `true` si hay una pantalla debajo a la que volver. |
+| `router.setParams({...})` | **No modifica la pila.** Cambia los parámetros de la pantalla actual sin apilar nada. |
+
+### C2. Simulación de la pila
+
+| # | Instrucción | Pila resultante |
+|---|---|---|
+| 1 | `router.push("/productos/1")` | `/productos`, `/productos/1` |
+| 2 | `router.push("/productos/2")` | `/productos`, `/productos/1`, `/productos/2` |
+| 3 | `router.navigate("/productos/5")` | `/productos`, `/productos/1`, `/productos/2`, `/productos/5` |
+| 4 | `router.push("/perfil")` | `/productos`, `/productos/1`, `/productos/2`, `/productos/5`, `/perfil` |
+| 5 | `router.replace("/buscar")` | `/productos`, `/productos/1`, `/productos/2`, `/productos/5`, `/buscar` |
+| 6 | `router.back()` | `/productos`, `/productos/1`, `/productos/2`, `/productos/5` |
+| 7 | `router.dismissTo("/productos")` | `/productos` |
+| 8 | `router.canGoBack()` | Devuelve `false`: queda una sola pantalla, no hay a dónde volver. |
+
+
+### C3. ¿`<Link>` o `router`?
+
+**a)** `<Link>`: el usuario toca algo y no hay lógica previa. Con href como objeto: `<Link href={{ pathname: "/productos/[id]", params: { id } }}>`.
+
+**b)** `router.replace("/exito")`: la navegación ocurre **después de una lógica** (guardar y esperar la API). Con `replace`, el botón atrás no vuelve a un formulario ya enviado.
+
+**c)** `router.back()`: no se va a una ruta concreta, se vuelve a la pantalla anterior (en un modal, también sirve `router.dismiss()`).
+
+**d)** `router.replace("/")`: la navegación ocurre después de la lógica de login y no queremos que "atrás" vuelva a la pantalla de login.
+
+**e)** `router.dismissTo("/pedidos")`: desapila de una sola vez hasta la lista de pedidos, en lugar de llamar a `back()` tres veces.
+
+### C4. Escribí el código
+
+**a)** Link al producto con id 8, con href como objeto:
+
+```tsx
+<Link href={{ pathname: "/productos/[id]", params: { id: "8" } }}>
+  Ver producto 8
+</Link>
+```
+
+**b)** Link a `/perfil` que siempre apile, aunque la pantalla ya exista:
+
+```tsx
+<Link href="/perfil" push>
+  Ir al perfil
+</Link>
+```
+
+**c)** Botón propio (`Pressable`) que funciona como link a `/carrito` usando `asChild`:
+
+```tsx
+<Link href="/carrito" asChild>
+  <Pressable>
+    <Text>Ir al carrito</Text>
+  </Pressable>
+</Link>
+```
+
+### C5. Pensar
+
+En la web, cada `<Link>` se convierte en un `<a href>` real. La ventaja concreta para el usuario es que puede hacer clic derecho y abrirlo en otra pestaña, copiar la dirección, compartirla, guardarla en marcadores y usar el botón atrás del navegador; además los buscadores pueden indexar la página.
+
+En el celular no hay barra de direcciones, pero la misma URL sigue sirviendo: permite **deep links** (por ejemplo `comedoripf://menu/7`) para abrir una pantalla concreta desde otra app, una notificación o un link compartido, y mantiene la navegación consistente entre web y móvil.
+
+---
+
