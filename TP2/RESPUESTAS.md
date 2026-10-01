@@ -352,3 +352,72 @@ URL: `rutasipf://buscar?q=mate&categoria=bebidas`
 **b)** `useFocusEffect` ejecuta un efecto cada vez que la pantalla gana el foco, no solo cuando se monta, y limpia al perder el foco. Sirve porque en Stack y Tabs las pantallas quedan montadas aunque no se vean. Ejemplo: volver a pedir la lista de pedidos cada vez que el usuario entra a la tab "Carrito".   
 
 **c)** No es un error de Expo Router. `[id].tsx` acepta cualquier valor en ese segmento, porque el router solo sabe que la URL coincide con el patrón. La responsabilidad es del desarrollador: validar el parámetro dentro de la pantalla y mostrar un mensaje si el producto no existe.
+
+## Parte F · Redirecciones, rutas protegidas y deep links
+
+### F1. Redirect
+
+**a)** `<Redirect href="/productos" />` navega automáticamente a esa ruta apenas se renderiza. Equivale a `router.replace("/productos")`.
+
+**b)** Porque si apilara (`push`), la pantalla que redirige quedaría en la pila. Al tocar "atrás" el usuario volvería a esa pantalla, que se redirigiría otra vez al mismo lugar: quedaría atrapado en un bucle sin poder retroceder. Con `replace`, la pantalla que redirige desaparece de la pila y "atrás" lleva a donde corresponde.
+
+### F2. `Stack.Protected`
+
+```tsx
+function NavegacionRaiz() {
+  const { usuario } = useAuth();
+  const conSesion = usuario !== null;
+
+  return (
+    <Stack>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Protected guard={conSesion}>
+        <Stack.Screen name="privado" />
+      </Stack.Protected>
+      <Stack.Protected guard={!conSesion}>
+        <Stack.Screen name="login" options={{ presentation: 'modal' }} />
+      </Stack.Protected>
+    </Stack>
+  );
+}
+```
+
+**a)** Cuando su `guard` es `false`, la pantalla deja de existir en el navegador: no se puede navegar a ella y, si estaba en la pila, se elimina.
+
+**b)** Al iniciar sesión, `conSesion` pasa a `true`, por lo que el `guard` de `login` pasa a `false` y esa pantalla desaparece del navegador. El modal se cierra solo porque la pantalla ya no existe, sin necesidad de llamar a `router.back()`.
+
+**c)** Lo causa navegar a una pantalla protegida cuyo guard está en `false` (por ejemplo, `router.push("/privado")` sin sesión, o ir a `/login` estando logueado): ningún navegador sabe manejar esa acción. Se evita no ofreciendo esa navegación cuando el guard es `false` (por ejemplo, mostrar el botón solo si hay sesión) y navegando únicamente a rutas que estén habilitadas.
+
+**d)** Centraliza la protección en un solo lugar(el layout raíz) en vez de repetir un `<Redirect>` condicional en cada pantalla. Además la pantalla protegida ni siquiera se monta (no hay parpadeo de contenido) y el historial se limpia solo cuando cambia la sesión.
+
+### F3. 404, anchor y rutas tipadas
+
+**a)** `+not-found.tsx`: es la pantalla que se muestra cuando la URL no coincide con ninguna ruta (el 404). Se define en `src/app/+not-found.tsx`.
+
+**b)** `export const unstable_settings = { anchor: "(tabs)" }`: indica qué ruta queda como **base de la pila** cuando se entra directamente a una pantalla por un deep link. Así, si se abre `/categorias/bebidas`, las pestañas quedan debajo y "atrás" tiene a dónde volver. Se define en el `_layout.tsx` raíz (`src/app/_layout.tsx`).
+
+**c)** `typedRoutes` genera tipos de TypeScript con todas las rutas existentes, de modo que cada `href` se valida. `<Link href="/prodcutos" />` da **error de TypeScript** porque esa ruta no existe. Los tipos se generan automáticamente en la carpeta oculta del proyecto, dentro del archivo `.expo/types/router.d.ts`.
+
+### F4. Deep links
+
+Scheme `comedoripf`, IP de la compu `192.168.1.20`, plato 7 (`/menu/7`):
+
+| Dónde | URL |
+|---|---|
+| App instalada (build propia) | `comedoripf://menu/7` |
+| Expo Go en desarrollo | `exp://192.168.1.20:8081/--/menu/7` |
+| Web (`npx expo start --web`) | `http://localhost:8081/menu/7` |
+
+**¿Qué significa `/--/`?** Es el separador entre la dirección del servidor de desarrollo (`exp://IP:puerto`) y la ruta interna de la app. Lo que viene después de `/--/` es la ruta que Expo Router debe abrir.
+
+**¿Por qué no funciona el scheme propio en Expo Router dentro de Expo Go?** Porque la app no está instalada como aplicación independiente: corre **dentro de Expo Go**, y el sistema operativo solo asocia el scheme `exp://` con Expo Go. El scheme `comedoripf://` recién existe cuando se hace una build propia de la app.
+
+### F5. Errores comunes
+
+**a)** **Causa:** `<Link asChild>` pasa sus propiedades al hijo mediante un `Slot`, y el `Slot` no acepta un **array de estilos** en `style`. **Solución:** aplanar los estilos en un único objeto con `StyleSheet.flatten([...])`.
+
+**b)** **Causa:** todo archivo dentro de `src/app` se convierte en una ruta, así que `TarjetaProducto.tsx` creó la ruta `/TarjetaProducto`. **Solución:** mover el componente a `src/components/TarjetaProducto.tsx`.
+
+**c)** **Causa:** `router.push("/")` **apila** la pantalla principal encima del login, así que "atrás" vuelve al login. **Solución:** usar `router.replace("/")`, o dejar que `Stack.Protected` cierre el login solo cuando cambia la sesión.
+
+**d)** **Causa:** `npm install` trajo la última versión del paquete, que puede ser **incompatible con el SDK** de Expo (y con Expo Go). **Solución:** desinstalarlo y volver a instalarlo con `npx expo install <paquete>`, que elige la versión compatible.
