@@ -237,3 +237,54 @@ En el celular no hay barra de direcciones, pero la misma URL sigue sirviendo: pe
 
 ---
 
+## Parte D · Navegadores: Stack, Tabs y Drawer
+
+### D1. Comparación
+
+| | Stack | Tabs | Drawer |
+|---|---|---|---|
+| ¿Apila pantallas? | Sí. Cada pantalla nueva se apila sobre la anterior. | No. Cambiar de pestaña no apila: cada pestaña es una sección independiente. | No. Cambiar de opción del menú no apila. |
+| ¿Cómo cambia de pantalla el usuario? | Navegando con `<Link>` / `router` y volviendo con el botón "atrás" del header o el gesto. | Tocando una pestaña de la barra (inferior). | Deslizando desde el borde o tocando el ícono de menú y eligiendo una opción. |
+| ¿Desde dónde se importa en SDK 57? | `expo-router` | `expo-router` | `expo-router/drawer` |
+| Un caso de uso típico | Lista de platos → detalle de un plato. | Secciones principales de la app (Inicio, Menú, Carrito). | Menú lateral con secciones de gestión (por ejemplo, la cocina). |
+
+### D2. Cada tab tiene su pila
+
+Ve el detalle del producto 4. Cada pestaña que tiene su propio Stack conserva su propia pila: al cambiar a Inicio, la pila de Productos no se destruye, queda como estaba; al volver, aparece la pantalla que se había dejado (el detalle del 4), no la lista. Se comporta así, por ejemplo, Instagram: si entrás al perfil de alguien desde "Buscar", te vas a "Inicio" y volvés a "Buscar", seguís en ese perfil.
+
+### D3. ¿Dónde va cada pantalla?
+
+Regla práctica: si la pantalla debe **mantener visible** la barra de pestañas, va **dentro de la tab**; si debe **taparla**, va en el **Stack raíz**.
+
+- **a)** Detalle de un producto con la barra visible: **dentro de la tab** (en el Stack propio de Productos).
+- **b)** Modal de confirmación de compra que tapa la barra: **Stack raíz** (con `presentation: "modal"`).
+- **c)** Login que se abre como modal: **Stack raíz**, por la misma razón.
+- **d)** "Mis pedidos anteriores" dentro de Perfil: **dentro de la tab Perfil**, que necesita su propio Stack, para que la barra siga visible.
+
+### D4. Configurar el Stack
+
+**a)** `screenOptions` define opciones por defecto para todas las pantallas de ese Stack. Las `options` de un `Stack.Screen` valen solo para esa pantalla y tienen prioridad sobre `screenOptions`.
+
+**b)** Porque `(tabs)` es otro navegador (con sus propias pestañas y headers) metido dentro del Stack raíz. Si no se oculta el header del Stack para esa pantalla, aparecería un header duplicado ("(tabs)") encima del de las pestañas.
+
+**c)** Sí existe: todo archivo dentro de `src/app` es una ruta, esté o no declarada, y se muestra con las opciones por defecto. Declararla sirve para configurarla: título, etc.
+
+**d)** Valores posibles de `presentation`: `card`, `modal`, `transparentModal`, `fullScreenModal`, `formSheet`. Para una hoja inferior que se abre al 50% usaría `formSheet` con `sheetAllowedDetents: [0.5]`.
+
+**e)** Desde la propia pantalla de detalle, con un `Stack.Screen` dentro del JSX:
+
+```tsx
+<Stack.Screen options={{ title: `Producto ${id}` }} />
+```
+
+### D5. Tabs y Drawer en SDK 57
+
+**a)** `Tabs` ya no se importa desde `expo-router`, sino desde **`expo-router/js-tabs`** (tabs implementadas en JavaScript). La alternativa experimental son las **tabs nativas** (`NativeTabs`, en `expo-router/unstable-native-tabs`), que usan la barra de pestañas propia de cada sistema operativo.
+
+**b)** Necesita `react-native-gesture-handler` y `react-native-reanimated`. En el layout raíz conviene poner un **`GestureHandlerRootView`** (con `style={{ flex: 1 }}`) envolviendo todo, para que funcionen los gestos.
+
+**c)** **No.** Desde SDK 56 el navegador Drawer viene incluido dentro de `expo-router` y se importa desde `expo-router/drawer`; además, el código de la app ya no debe importar desde paquetes externos `@react-navigation/*`.
+
+**d)** `router.back()` actúa en el navegador **más interno que está en foco** (el activo). Si ese navegador no puede retroceder (está en su primera pantalla), la acción pasa al navegador padre.
+
+---
