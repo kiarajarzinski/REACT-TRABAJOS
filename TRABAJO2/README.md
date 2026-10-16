@@ -26,6 +26,13 @@ La pantalla modal de confirmación es un paso transitorio dentro del proceso de 
 <img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/fa4340b1-d1f2-44fe-97c8-6e6f9fe4f11b" />
 <img width="1501" height="612" alt="image" src="https://github.com/user-attachments/assets/9eb8f91a-62b2-4017-866a-d8ec8e5afce5" />
 
+## Deep Link de Prueba 
+exp://10.254.196.109:8081/--/menu/7
+Este enlace me llevó al plato número 7 
+<img width="720" height="1600" alt="WhatsApp Image 2026-10-16 at 2 29 22 PM" src="https://github.com/user-attachments/assets/893bc306-dbe0-48cb-8a1c-6754e5420083" />
+
+
+
 
 ## Árbol de Carpetas de `src/app` y Navegadores (`_layout`)
 
