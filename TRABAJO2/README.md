@@ -16,7 +16,14 @@ En el flujo de navegación de la aplicación, al pasar de la pantalla modal de c
 Si se utilizara `router.push`, la pantalla de confirmación (`/confirmar`) permanecería guardada en la pila del `Stack` de navegación, justo por debajo de `/turno/[numero]`. Si el usuario presionara el botón "Atrás" (por gesto, botón físico del dispositivo o el botón del header), regresaría a la pantalla de confirmación de un pedido que **ya fue procesado, confirmado y encolado en la cocina**. Esto permitiría que el usuario toque nuevamente el botón de confirmación, generando una orden duplicada por error.
 
 ### 2. Mantenimiento de un Historial de Navegación Lógico
-La pantalla modal de confirmación es un paso transitorio dentro del proceso de compra. Una vez que el pedido es enviado y encolado con éxito, dicha pantalla pierde su utilidad en el historial. Al utilizar `router.replace`, la pantalla de confirmación es sustituida en la pila por la pantalla del turno. De esta manera, si el usuario decide volver atrás desde la pantalla de su turno, regresa a una pantalla principal o al menú sin pasar nuevamente por la confirmación, asegurando una experiencia de usuario (UX) limpia y segura.    
+La pantalla modal de confirmación es un paso transitorio dentro del proceso de compra. Una vez que el pedido es enviado y encolado con éxito, dicha pantalla pierde su utilidad en el historial. Al utilizar `router.replace`, la pantalla de confirmación es sustituida en la pila por la pantalla del turno. De esta manera, si el usuario decide volver atrás desde la pantalla de su turno, regresa a una pantalla principal o al menú sin pasar nuevamente por la confirmación, asegurando una experiencia de usuario (UX) limpia y segura.   
+
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/174b0880-f4c7-4da3-b09b-dad54afa7ab6" />
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/a2c803aa-f4ae-460b-b7f6-f4669cb4d0fa" />
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/a0cfe034-65fc-4340-ab04-2225080d88e4" />
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/8a1a09ef-3b03-45f3-949d-06dc00a98d66" />
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/71f45d8c-b137-4684-a4c9-52ba575d453e" />
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/fa4340b1-d1f2-44fe-97c8-6e6f9fe4f11b" />
 
 ## Árbol de Carpetas de `src/app` y Navegadores (`_layout`)
 
@@ -52,12 +59,7 @@ src/
     ├── pedido.tsx                      --> /pedido (Ruta antigua que ejecuta <Redirect href="/carrito"/>)
     └── +not-found.tsx                  --> Pantalla 404 (Muestra la URL inexistente)
 
-<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/174b0880-f4c7-4da3-b09b-dad54afa7ab6" />
-<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/a2c803aa-f4ae-460b-b7f6-f4669cb4d0fa" />
-<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/a0cfe034-65fc-4340-ab04-2225080d88e4" />
-<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/8a1a09ef-3b03-45f3-949d-06dc00a98d66" />
-<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/71f45d8c-b137-4684-a4c9-52ba575d453e" />
-<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/fa4340b1-d1f2-44fe-97c8-6e6f9fe4f11b" />
+
 
 
 
