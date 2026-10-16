@@ -1,5 +1,5 @@
-import { RutaPlaceholder } from '@/components/ruta-placeholder';
+import { Redirect } from 'expo-router';
 
-export default function PedidoScreen() {
-  return <RutaPlaceholder titulo="Pedido" />;
+export default function PedidoRedirect() {
+  return <Redirect href="/carrito" />;
 }

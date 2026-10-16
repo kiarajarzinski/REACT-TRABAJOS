@@ -1,56 +1,54 @@
-# Welcome to your Expo app 👋
+# 🍽️ Comedor IPF - Sistema de Pedidos y Gestión de Cocina
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**Tecnicatura Superior en Desarrollo de Software Multiplataforma**  
+*Instituto Politécnico Formosa*  
+**Materia:** Taller Complementario - React Native II  
+**Trabajo Práctico N° 2:** Expo Router (SDK 57) - Rutas, navegación, pilas y colas  
+**Alumna:** Kiara Jarzinski  
 
-## Get started
+---
 
-1. Install dependencies
+## Justificación de `replace` vs `push` en el Flujo de Confirmación
 
-   ```bash
-   npm install
-   ```
+En el flujo de navegación de la aplicación, al pasar de la pantalla modal de confirmación (`/confirmar`) a la pantalla del estado del turno (`/turno/[numero]`), se utiliza estrictamente el método **`router.replace`** en lugar de `router.push`.
 
-2. Start the app
+### 1. Prevención de Pedidos Duplicados
+Si se utilizara `router.push`, la pantalla de confirmación (`/confirmar`) permanecería guardada en la pila del `Stack` de navegación, justo por debajo de `/turno/[numero]`. Si el usuario presionara el botón "Atrás" (por gesto, botón físico del dispositivo o el botón del header), regresaría a la pantalla de confirmación de un pedido que **ya fue procesado, confirmado y encolado en la cocina**. Esto permitiría que el usuario toque nuevamente el botón de confirmación, generando una orden duplicada por error.
 
-   ```bash
-   npx expo start
-   ```
+### 2. Mantenimiento de un Historial de Navegación Lógico
+La pantalla modal de confirmación es un paso transitorio dentro del proceso de compra. Una vez que el pedido es enviado y encolado con éxito, dicha pantalla pierde su utilidad en el historial. Al utilizar `router.replace`, la pantalla de confirmación es sustituida en la pila por la pantalla del turno. De esta manera, si el usuario decide volver atrás desde la pantalla de su turno, regresa a una pantalla principal o al menú sin pasar nuevamente por la confirmación, asegurando una experiencia de usuario (UX) limpia y segura.    
 
-In the output, you'll find options to open the app in a
+## Árbol de Carpetas de `src/app` y Navegadores (`_layout`)
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+```text
+src/
+└── app/
+    ├── _layout.tsx                     --> [Stack Raíz] (Controla modales, rutas y Stack.Protected para cocina)
+    ├── (tabs)/                         --> [Group] Grupo de pestañas principales
+    │   ├── _layout.tsx                 --> [Tabs] Navegador de solapas inferior (js-tabs)
+    │   ├── index.tsx                   --> / (Tab "Inicio": Saludo y accesos rápidos)
+    │   ├── menu/                       
+    │   │   ├── _layout.tsx             --> [Stack] Navegador Stack propio para la pestaña Menú
+    │   │   ├── index.tsx               --> /menu (Lista de platos por categoría)
+    │   │   └── [id].tsx                --> /menu/[id] (Detalle del plato)
+    │   └── carrito/                    
+    │       ├── _layout.tsx             --> [Stack] Navegador Stack propio para la pestaña Carrito
+    │       ├── index.tsx               --> /carrito (Items, total, botón deshacer por Pila)
+    │       └── nota.tsx                --> /carrito/nota (Aclaración para la cocina)
+    ├── categorias/
+    │   └── [categoria].tsx             --> /categorias/[categoria] (Stack raíz)
+    ├── buscar.tsx                      --> /buscar?q=&categoria= (Stack raíz, lectura/escritura de URL sin apilar)
+    ├── confirmar.tsx                   --> /confirmar (Stack raíz, presentation: "modal")
+    ├── turno/
+    │   └── [numero].tsx                --> /turno/[numero] (Stack raíz: número de turno y cola de espera)
+    ├── login.tsx                       --> /login (Stack raíz, presentation: "modal", solo sin sesión)
+    ├── cocina/                         --> [Folder] Sección protegida para personal de cocina
+    │   ├── _layout.tsx                 --> [Drawer] Menú lateral deslizable (solo existe con sesión)
+    │   ├── index.tsx                   --> /cocina (Frente de la Cola FIFO y botón "Atender siguiente")
+    │   └── atendidos.tsx               --> /cocina/atendidos (Pila de pedidos procesados: tope a base)
+    ├── ayuda/
+    │   ├── index.tsx                   --> /ayuda (Índice del centro de ayuda)
+    │   └── [...slug].tsx               --> /ayuda/... (Catch-all para artículos con profundidad variable)
+    ├── pedido.tsx                      --> /pedido (Ruta antigua que ejecuta <Redirect href="/carrito"/>)
+    └── +not-found.tsx                  --> Pantalla 404 (Muestra la URL inexistente)
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-### Other setup steps
-
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
