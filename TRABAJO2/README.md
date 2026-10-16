@@ -52,3 +52,17 @@ src/
     ├── pedido.tsx                      --> /pedido (Ruta antigua que ejecuta <Redirect href="/carrito"/>)
     └── +not-found.tsx                  --> Pantalla 404 (Muestra la URL inexistente)
 
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/174b0880-f4c7-4da3-b09b-dad54afa7ab6" />
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/a2c803aa-f4ae-460b-b7f6-f4669cb4d0fa" />
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/a0cfe034-65fc-4340-ab04-2225080d88e4" />
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/8a1a09ef-3b03-45f3-949d-06dc00a98d66" />
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/71f45d8c-b137-4684-a4c9-52ba575d453e" />
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/fa4340b1-d1f2-44fe-97c8-6e6f9fe4f11b" />
+
+
+
+
+
+
+
+
