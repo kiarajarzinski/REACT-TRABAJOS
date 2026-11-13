@@ -1,6 +1,12 @@
 import React from 'react';
-import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
-import { EstadoPermiso, INFO_RECURSOS, RecursoPermiso } from '../lib/permisos';
+import { Platform, StyleSheet, Text, View } from 'react-native';
+
+import { Boton } from '@/components/boton';
+import { Icono } from '@/components/icono';
+import { Parrafo } from '@/components/texto';
+import { FuenteMono } from '@/constants/theme';
+import { useColores } from '@/hooks/use-colores';
+import { EstadoPermiso, INFO_RECURSOS, RecursoPermiso } from '@/lib/permisos';
 
 interface BadgeEstadoProps {
   estado: EstadoPermiso;
@@ -9,32 +15,34 @@ interface BadgeEstadoProps {
 }
 
 export function BadgeEstadoPermiso({ estado, parcial, provisional }: BadgeEstadoProps) {
+  const colores = useColores();
+
   let texto = 'Cargando...';
-  let bg = '#E2E8F0';
-  let color = '#334155';
+  let bg = colores.borde;
+  let color = colores.textoSecundario;
 
   if (estado === 'concedido') {
     if (provisional) {
       texto = 'Provisional (iOS)';
-      bg = '#E0F2FE';
-      color = '#0369A1';
+      bg = colores.primarioSuave;
+      color = colores.primario;
     } else if (parcial) {
       texto = 'Parcial / Limitado';
-      bg = '#FEF3C7';
-      color = '#B45309';
+      bg = colores.alertaSuave;
+      color = colores.alerta;
     } else {
       texto = 'Concedido';
-      bg = '#DCFCE7';
-      color = '#15803D';
+      bg = colores.exitoSuave;
+      color = colores.exito;
     }
   } else if (estado === 'preguntable') {
     texto = 'Preguntable';
-    bg = '#DBEAFE';
-    color = '#1D4ED8';
+    bg = colores.primarioSuave;
+    color = colores.primario;
   } else if (estado === 'bloqueado') {
     texto = 'Bloqueado';
-    bg = '#FEE2E2';
-    color = '#B91C1C';
+    bg = colores.peligroSuave;
+    color = colores.peligro;
   }
 
   return (
@@ -67,52 +75,92 @@ export function ExplicacionPermiso({
   onAbrirAjustes,
   children,
 }: ExplicacionPermisoProps) {
+  const colores = useColores();
   const info = INFO_RECURSOS[recurso];
   const esBloqueado = estado === 'bloqueado';
   const caminoExacto =
     Platform.OS === 'ios' ? info.caminoAjustesIOS : info.caminoAjustesAndroid;
 
   return (
-    <View style={styles.card}>
+    <View
+      style={[
+        styles.card,
+        { backgroundColor: colores.superficie, borderColor: colores.borde },
+      ]}>
       <View style={styles.headerRow}>
         <Text style={styles.icono}>{info.icono}</Text>
         <View style={{ flex: 1 }}>
-          <Text style={styles.titulo}>{info.titulo}</Text>
-          <Text style={styles.modulo}>{info.moduloExpo}</Text>
+          <Text style={[styles.titulo, { color: colores.texto }]}>{info.titulo}</Text>
+          <Text style={[styles.modulo, { color: colores.textoSecundario }]}>
+            {info.moduloExpo}
+          </Text>
         </View>
         <BadgeEstadoPermiso estado={estado} />
       </View>
 
-      <Text style={styles.beneficio}>{info.beneficio}</Text>
+      <Parrafo style={{ color: colores.texto, fontWeight: '500' }}>
+        {info.beneficio}
+      </Parrafo>
 
       {esBloqueado ? (
-        <View style={styles.bloqueadoBox}>
-          <Text style={styles.bloqueadoTitulo}>
-            🔒 El permiso está bloqueado en este dispositivo ({Platform.OS})
-          </Text>
-          <Text style={styles.bloqueadoTexto}>
+        <View
+          style={[
+            styles.bloqueadoBox,
+            { backgroundColor: colores.peligroSuave, borderColor: colores.peligro },
+          ]}>
+          <View style={styles.rowIcon}>
+            <Icono name="lock-closed" size={16} color={colores.peligro} />
+            <Text style={[styles.bloqueadoTitulo, { color: colores.peligro }]}>
+              Permiso bloqueado en este dispositivo ({Platform.OS})
+            </Text>
+          </View>
+          <Text style={[styles.bloqueadoTexto, { color: colores.texto }]}>
             El diálogo del sistema ya no puede mostrarse automáticamente. Para habilitarlo,
             seguí este camino en los Ajustes de tu teléfono:
           </Text>
-          <Text style={styles.caminoTexto}>{caminoExacto}</Text>
-          <Pressable style={[styles.boton, styles.botonAjustes]} onPress={onAbrirAjustes}>
-            <Text style={styles.botonTexto}>Abrir Ajustes</Text>
-          </Pressable>
+          <Text
+            style={[
+              styles.caminoTexto,
+              {
+                color: colores.peligro,
+                backgroundColor: colores.superficie,
+                borderColor: colores.borde,
+              },
+            ]}>
+            {caminoExacto}
+          </Text>
+          <Boton
+            titulo="Abrir Ajustes"
+            variante="peligro"
+            icono="settings-outline"
+            onPress={onAbrirAjustes}
+          />
         </View>
       ) : (
-        <View style={styles.previaBox}>
-          <Text style={styles.aclaracionAjustes}>
+        <View
+          style={[
+            styles.previaBox,
+            { backgroundColor: colores.fondo, borderColor: colores.borde },
+          ]}>
+          <Text style={[styles.aclaracionAjustes, { color: colores.textoSecundario }]}>
             Podés cambiar esta decisión en cualquier momento desde los Ajustes del sistema.
           </Text>
-          <Pressable style={styles.boton} onPress={onContinuar}>
-            <Text style={styles.botonTexto}>Continuar</Text>
-          </Pressable>
+          <Boton
+            titulo="Continuar"
+            variante="primario"
+            icono="arrow-forward"
+            onPress={onContinuar}
+          />
         </View>
       )}
 
-      <View style={styles.alternativaBox}>
-        <Text style={styles.alternativaLabel}>Camino alternativo (sin permiso):</Text>
-        <Text style={styles.alternativaTexto}>{info.alternativa}</Text>
+      <View style={[styles.alternativaBox, { borderTopColor: colores.borde }]}>
+        <Text style={[styles.alternativaLabel, { color: colores.primario }]}>
+          Camino alternativo (sin permiso):
+        </Text>
+        <Text style={[styles.alternativaTexto, { color: colores.textoSecundario }]}>
+          {info.alternativa}
+        </Text>
       </View>
 
       {children}
@@ -131,11 +179,9 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   card: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 18,
+    borderRadius: 14,
+    padding: 16,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
     gap: 12,
   },
   headerRow: {
@@ -143,93 +189,67 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
   },
+  rowIcon: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
   icono: {
-    fontSize: 30,
+    fontSize: 28,
   },
   titulo: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '700',
-    color: '#0F172A',
   },
   modulo: {
     fontSize: 12,
-    color: '#64748B',
-    fontFamily: Platform.select({ ios: 'Menlo', android: 'monospace', default: 'monospace' }),
-  },
-  beneficio: {
-    fontSize: 15,
-    lineHeight: 22,
-    color: '#1E293B',
-    fontWeight: '500',
+    fontFamily: FuenteMono,
   },
   previaBox: {
-    backgroundColor: '#F8FAFC',
     borderRadius: 12,
     padding: 14,
     gap: 12,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
   },
   aclaracionAjustes: {
     fontSize: 13,
-    color: '#475569',
     lineHeight: 18,
   },
   bloqueadoBox: {
-    backgroundColor: '#FEF2F2',
     borderRadius: 12,
     padding: 14,
     gap: 10,
     borderWidth: 1,
-    borderColor: '#FECACA',
   },
   bloqueadoTitulo: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#991B1B',
   },
   bloqueadoTexto: {
     fontSize: 13,
-    color: '#7F1D1D',
     lineHeight: 18,
   },
   caminoTexto: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '700',
-    color: '#991B1B',
-    backgroundColor: '#FEE2E2',
+    fontFamily: FuenteMono,
     padding: 10,
     borderRadius: 8,
-  },
-  boton: {
-    backgroundColor: '#0284C7',
-    paddingVertical: 13,
-    paddingHorizontal: 16,
-    borderRadius: 10,
-    alignItems: 'center',
-  },
-  botonAjustes: {
-    backgroundColor: '#DC2626',
-  },
-  botonTexto: {
-    color: '#FFFFFF',
-    fontSize: 15,
-    fontWeight: '700',
+    borderWidth: 1,
   },
   alternativaBox: {
     borderTopWidth: 1,
-    borderTopColor: '#F1F5F9',
     paddingTop: 10,
     gap: 2,
   },
   alternativaLabel: {
     fontSize: 12,
     fontWeight: '700',
-    color: '#64748B',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   alternativaTexto: {
     fontSize: 13,
-    color: '#334155',
+    lineHeight: 19,
   },
 });
-
