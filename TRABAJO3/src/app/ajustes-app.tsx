@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import React, { useState } from 'react';
-import { Platform, StyleSheet, Switch, Text, View } from 'react-native';
+import { StyleSheet, Switch, Text, View } from 'react-native';
 
 import { Boton } from '@/components/boton';
 import { Pantalla } from '@/components/pantalla';
@@ -20,8 +20,7 @@ import { setAvisarmeAlResolver, useReportesStore } from '@/lib/reportes';
 export default function AjustesAppScreen() {
   const colores = useColores();
   const { avisarmeAlResolver } = useReportesStore();
-  const { estado, parcial, provisional, matiz, pedir, abrirAjustes } =
-    usePermiso('notificaciones');
+  const { estado, parcial, matiz, pedir, abrirAjustes } = usePermiso('notificaciones');
   const [mostrarPrevia, setMostrarPrevia] = useState(false);
 
   const interruptorActivo = avisarmeAlResolver && estado === 'concedido';
@@ -43,14 +42,6 @@ export default function AjustesAppScreen() {
 
   const confirmarPedidoNotificaciones = async () => {
     const res = await pedir();
-    if (res.estado === 'concedido') {
-      setAvisarmeAlResolver(true);
-      setMostrarPrevia(false);
-    }
-  };
-
-  const pedirProvisionalIOS = async () => {
-    const res = await pedir({ provisionalIOS: true });
     if (res.estado === 'concedido') {
       setAvisarmeAlResolver(true);
       setMostrarPrevia(false);
@@ -92,11 +83,7 @@ export default function AjustesAppScreen() {
           <Text style={[styles.statusLabel, { color: colores.textoSecundario }]}>
             Estado del permiso:
           </Text>
-          <BadgeEstadoPermiso
-            estado={estado}
-            parcial={parcial}
-            provisional={provisional}
-          />
+          <BadgeEstadoPermiso estado={estado} parcial={parcial} />
         </View>
         {matiz ? (
           <Text style={[styles.matizText, { color: colores.primario }]}>
@@ -112,28 +99,6 @@ export default function AjustesAppScreen() {
           onContinuar={confirmarPedidoNotificaciones}
           onAbrirAjustes={abrirAjustes}
         />
-      ) : null}
-
-      {Platform.OS === 'ios' && estado !== 'concedido' ? (
-        <View
-          style={[
-            styles.card,
-            { backgroundColor: colores.primarioSuave, borderColor: colores.borde },
-          ]}>
-          <Text style={[styles.switchTitle, { color: colores.primario }]}>
-            🍏 Desafío opcional G4: Notificaciones provisionales (iOS)
-          </Text>
-          <Text style={[styles.switchSub, { color: colores.texto }]}>
-            Podés activar el envío silencioso al Centro de Notificaciones con
-            allowProvisional: true sin mostrar el diálogo interruptivo de iOS.
-          </Text>
-          <Boton
-            titulo="Activar notificaciones provisionales (iOS)"
-            variante="primario"
-            icono="notifications-circle-outline"
-            onPress={pedirProvisionalIOS}
-          />
-        </View>
       ) : null}
 
       <Subtitulo>Camino alternativo</Subtitulo>

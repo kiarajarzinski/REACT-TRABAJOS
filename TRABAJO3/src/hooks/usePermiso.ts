@@ -12,11 +12,10 @@ import { useRevisarAlVolver } from './useRevisarAlVolver';
 export interface ResultadoUsePermiso {
   estado: EstadoPermiso;
   parcial: boolean;
-  provisional: boolean;
   matiz: string | null;
   canAskAgain: boolean;
   rawStatus: string;
-  pedir: (opciones?: { provisionalIOS?: boolean }) => Promise<DetallePermiso>;
+  pedir: () => Promise<DetallePermiso>;
   abrirAjustes: () => Promise<void>;
   recargar: () => Promise<DetallePermiso>;
 }
@@ -35,7 +34,6 @@ export function usePermiso(recurso: RecursoPermiso): ResultadoUsePermiso {
     recurso,
     estado: 'cargando',
     parcial: false,
-    provisional: false,
     matiz: null,
     canAskAgain: true,
     rawStatus: 'undetermined',
@@ -57,14 +55,11 @@ export function usePermiso(recurso: RecursoPermiso): ResultadoUsePermiso {
     recargar();
   });
 
-  const pedir = useCallback(
-    async (opciones?: { provisionalIOS?: boolean }) => {
-      const resultado = await solicitarPermisoRecurso(recurso, opciones);
-      setDetalle(resultado);
-      return resultado;
-    },
-    [recurso]
-  );
+  const pedir = useCallback(async () => {
+    const resultado = await solicitarPermisoRecurso(recurso);
+    setDetalle(resultado);
+    return resultado;
+  }, [recurso]);
 
   const abrirAjustes = useCallback(async () => {
     await abrirAjustesSistema();
@@ -73,7 +68,6 @@ export function usePermiso(recurso: RecursoPermiso): ResultadoUsePermiso {
   return {
     estado: detalle.estado,
     parcial: detalle.parcial,
-    provisional: detalle.provisional,
     matiz: detalle.matiz,
     canAskAgain: detalle.canAskAgain,
     rawStatus: detalle.rawStatus,
@@ -82,4 +76,3 @@ export function usePermiso(recurso: RecursoPermiso): ResultadoUsePermiso {
     recargar,
   };
 }
-

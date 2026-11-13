@@ -13,7 +13,6 @@ export interface DetallePermiso {
   recurso: RecursoPermiso;
   estado: EstadoPermiso;
   parcial: boolean;
-  provisional: boolean;
   matiz: string | null;
   canAskAgain: boolean;
   rawStatus: string;
@@ -27,8 +26,6 @@ export interface InfoRecurso {
   beneficio: string;
   cuandoSePide: string;
   alternativa: string;
-  caminoAjustesAndroid: string;
-  caminoAjustesIOS: string;
 }
 
 export const INFO_RECURSOS: Record<RecursoPermiso, InfoRecurso> = {
@@ -43,10 +40,6 @@ export const INFO_RECURSOS: Record<RecursoPermiso, InfoRecurso> = {
       'Recién al tocar "Escanear QR del aula" o "Sacar foto" en un nuevo reporte.',
     alternativa:
       'Escribir el código del aula a mano o elegir una foto existente con el selector del sistema.',
-    caminoAjustesAndroid:
-      'Ajustes → Aplicaciones → Mantenimiento IPF → Permisos → Cámara → "Permitir solo mientras la app está en uso"',
-    caminoAjustesIOS:
-      'Configuración → Apps → Mantenimiento IPF → Activar el interruptor de "Cámara"',
   },
   ubicacion: {
     recurso: 'ubicacion',
@@ -55,12 +48,8 @@ export const INFO_RECURSOS: Record<RecursoPermiso, InfoRecurso> = {
     moduloExpo: 'expo-location',
     beneficio:
       'Usamos tu ubicación para marcar en qué sector del edificio (patio, estacionamiento o pasillo) está el desperfecto.',
-    cuandoSePide: 'Recién al tocar "Marcar ubicación actual" en el formulario de reporte.',
+    cuandoSePide: 'Recién al tocar "Usar mi ubicación actual" en el formulario de reporte.',
     alternativa: 'Seleccionar el sector del edificio manualmente de la lista.',
-    caminoAjustesAndroid:
-      'Ajustes → Aplicaciones → Mantenimiento IPF → Permisos → Ubicación → "Permitir solo con la app en uso"',
-    caminoAjustesIOS:
-      'Configuración → Apps → Mantenimiento IPF → Ubicación → "Al usar la app"',
   },
   notificaciones: {
     recurso: 'notificaciones',
@@ -72,10 +61,6 @@ export const INFO_RECURSOS: Record<RecursoPermiso, InfoRecurso> = {
     cuandoSePide:
       'Únicamente al activar el interruptor "Avisarme cuando se resuelva mi reporte" en Ajustes de la app.',
     alternativa: 'Consultar la pestaña "Avisos" (bandeja interna dentro de la app).',
-    caminoAjustesAndroid:
-      'Ajustes → Aplicaciones → Mantenimiento IPF → Notificaciones → Activar "Mostrar notificaciones"',
-    caminoAjustesIOS:
-      'Configuración → Apps → Mantenimiento IPF → Notificaciones → Activar "Permitir notificaciones"',
   },
   fotos: {
     recurso: 'fotos',
@@ -86,11 +71,7 @@ export const INFO_RECURSOS: Record<RecursoPermiso, InfoRecurso> = {
       'Usamos el selector de fotos del sistema para que elijas la imagen del desperfecto sin pedir acceso a toda tu galería.',
     cuandoSePide:
       'No se pide permiso de galería: "Elegir de la galería" abre el Photo Picker nativo del sistema.',
-    alternativa: 'Selector del sistema (PHPicker / Android Photo Picker) sin permisos.',
-    caminoAjustesAndroid:
-      'Ajustes → Aplicaciones → Mantenimiento IPF → Permisos → Fotos y videos',
-    caminoAjustesIOS:
-      'Configuración → Apps → Mantenimiento IPF → Fotos → "Fotos seleccionadas" o "Acceso completo"',
+    alternativa: 'Selector del sistema sin permisos.',
   },
 };
 
@@ -115,7 +96,7 @@ export async function asegurarCanalReportes(): Promise<void> {
       description: 'Avisos cuando un desperfecto reportado cambia a estado resuelto',
       importance: Notifications.AndroidImportance.HIGH,
       vibrationPattern: [0, 250, 250, 250],
-      lightColor: '#208AEF',
+      lightColor: '#0A9484',
     });
   }
 }
@@ -136,7 +117,6 @@ export async function consultarPermisoRecurso(
         recurso,
         estado: calcularEstado(res.granted, res.canAskAgain),
         parcial: false,
-        provisional: false,
         matiz: res.granted ? 'acceso completo a cámara' : null,
         canAskAgain: res.canAskAgain,
         rawStatus: res.status,
@@ -169,7 +149,6 @@ export async function consultarPermisoRecurso(
         recurso,
         estado: calcularEstado(res.granted, res.canAskAgain),
         parcial: Boolean(esAproximada),
-        provisional: false,
         matiz,
         canAskAgain: res.canAskAgain,
         rawStatus: res.status,
@@ -178,24 +157,15 @@ export async function consultarPermisoRecurso(
 
     if (recurso === 'notificaciones') {
       const res = await Notifications.getPermissionsAsync();
-      const iosStatus = res.ios?.status;
-      const esProvisional =
-        Platform.OS === 'ios' &&
-        iosStatus === Notifications.IosAuthorizationStatus.PROVISIONAL;
-      const concedido = res.granted || esProvisional;
-
       let matiz: string | null = null;
-      if (esProvisional) {
-        matiz = 'ios.status: PROVISIONAL (entrega silenciosa)';
-      } else if (concedido) {
+      if (res.granted) {
         matiz = Platform.OS === 'android' ? 'canal: "reportes" activo' : 'alertas activas';
       }
 
       return {
         recurso,
-        estado: calcularEstado(concedido, res.canAskAgain),
-        parcial: esProvisional,
-        provisional: esProvisional,
+        estado: calcularEstado(res.granted, res.canAskAgain),
+        parcial: false,
         matiz,
         canAskAgain: res.canAskAgain,
         rawStatus: res.status,
@@ -218,7 +188,6 @@ export async function consultarPermisoRecurso(
       recurso,
       estado: calcularEstado(res.granted, res.canAskAgain),
       parcial: Boolean(esLimitado),
-      provisional: false,
       matiz,
       canAskAgain: res.canAskAgain,
       rawStatus: res.status,
@@ -228,7 +197,6 @@ export async function consultarPermisoRecurso(
       recurso,
       estado: 'preguntable',
       parcial: false,
-      provisional: false,
       matiz: null,
       canAskAgain: true,
       rawStatus: 'undetermined',
@@ -237,8 +205,7 @@ export async function consultarPermisoRecurso(
 }
 
 export async function solicitarPermisoRecurso(
-  recurso: RecursoPermiso,
-  opciones?: { provisionalIOS?: boolean }
+  recurso: RecursoPermiso
 ): Promise<DetallePermiso> {
   if (recurso === 'camara') {
     await Camera.requestCameraPermissionsAsync();
@@ -253,14 +220,7 @@ export async function solicitarPermisoRecurso(
   if (recurso === 'notificaciones') {
     // Requisito G2.5: En Android crear el canal "reportes" ANTES de pedir el permiso
     await asegurarCanalReportes();
-    await Notifications.requestPermissionsAsync({
-      ios: {
-        allowAlert: true,
-        allowBadge: true,
-        allowSound: true,
-        allowProvisional: Boolean(opciones?.provisionalIOS),
-      },
-    });
+    await Notifications.requestPermissionsAsync();
     return consultarPermisoRecurso('notificaciones');
   }
 
@@ -301,7 +261,7 @@ export async function obtenerUbicacionActualRespetuosa(): Promise<ResultadoUbica
     if (esAproximada) {
       return {
         aproximada: true,
-        textoMostrar: 'Ubicación aproximada (zona del Instituto)',
+        textoMostrar: 'Ubicación aproximada',
       };
     }
 
@@ -317,4 +277,3 @@ export async function obtenerUbicacionActualRespetuosa(): Promise<ResultadoUbica
     return null;
   }
 }
-

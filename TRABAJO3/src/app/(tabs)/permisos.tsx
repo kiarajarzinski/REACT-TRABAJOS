@@ -13,7 +13,7 @@ import { INFO_RECURSOS, RecursoPermiso } from '@/lib/permisos';
 
 function FilaRecursoPermiso({ recurso }: { recurso: RecursoPermiso }) {
   const colores = useColores();
-  const { estado, parcial, provisional, matiz, canAskAgain, abrirAjustes, recargar } =
+  const { estado, parcial, matiz, canAskAgain, abrirAjustes, recargar } =
     usePermiso(recurso);
   const info = INFO_RECURSOS[recurso];
 
@@ -39,11 +39,7 @@ function FilaRecursoPermiso({ recurso }: { recurso: RecursoPermiso }) {
             {info.moduloExpo}
           </Text>
         </View>
-        <BadgeEstadoPermiso
-          estado={estado}
-          parcial={parcial}
-          provisional={provisional}
-        />
+        <BadgeEstadoPermiso estado={estado} parcial={parcial} />
       </View>
 
       <View style={styles.metaGrid}>
@@ -110,20 +106,12 @@ function FilaRecursoPermiso({ recurso }: { recurso: RecursoPermiso }) {
             />
           </View>
         ) : estado === 'bloqueado' ? (
-          <View style={{ flex: 1, gap: 8 }}>
+          <View style={{ flex: 1 }}>
             <Boton
               titulo="Abrir Ajustes"
               variante="peligro"
               icono="settings-outline"
               onPress={abrirAjustes}
-            />
-            <Boton
-              titulo="Ver guía de desbloqueo"
-              variante="secundario"
-              icono="help-circle-outline"
-              onPress={() =>
-                router.push({ pathname: '/permisos/[recurso]', params: { recurso } })
-              }
             />
           </View>
         ) : (
@@ -137,11 +125,7 @@ function FilaRecursoPermiso({ recurso }: { recurso: RecursoPermiso }) {
           </View>
         )}
 
-        <Boton
-          titulo="↻"
-          variante="secundario"
-          onPress={recargar}
-        />
+        <Boton titulo="↻" variante="secundario" onPress={recargar} />
       </View>
     </View>
   );

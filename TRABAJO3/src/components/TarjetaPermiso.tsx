@@ -1,5 +1,5 @@
 import React from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import { Boton } from '@/components/boton';
 import { Icono } from '@/components/icono';
@@ -11,10 +11,9 @@ import { EstadoPermiso, INFO_RECURSOS, RecursoPermiso } from '@/lib/permisos';
 interface BadgeEstadoProps {
   estado: EstadoPermiso;
   parcial?: boolean;
-  provisional?: boolean;
 }
 
-export function BadgeEstadoPermiso({ estado, parcial, provisional }: BadgeEstadoProps) {
+export function BadgeEstadoPermiso({ estado, parcial }: BadgeEstadoProps) {
   const colores = useColores();
 
   let texto = 'Cargando...';
@@ -22,11 +21,7 @@ export function BadgeEstadoPermiso({ estado, parcial, provisional }: BadgeEstado
   let color = colores.textoSecundario;
 
   if (estado === 'concedido') {
-    if (provisional) {
-      texto = 'Provisional (iOS)';
-      bg = colores.primarioSuave;
-      color = colores.primario;
-    } else if (parcial) {
+    if (parcial) {
       texto = 'Parcial / Limitado';
       bg = colores.alertaSuave;
       color = colores.alerta;
@@ -65,8 +60,8 @@ interface ExplicacionPermisoProps {
  * Cumple G2.6 y G6.1:
  * - Si el estado es 'preguntable' (canAskAgain: true) -> muestra el beneficio,
  *   un único botón "Continuar" (sin "Ahora no" ni "Cerrar") y la aclaración de Ajustes.
- * - Si el estado es 'bloqueado' (canAskAgain: false) -> muestra cómo habilitarlo en Ajustes
- *   según la plataforma actual (Android o iOS) y el botón cambia a "Abrir Ajustes".
+ * - Si el estado es 'bloqueado' (canAskAgain: false) -> explica cómo habilitarlo en Ajustes
+ *   y el botón pasa a ser "Abrir Ajustes".
  */
 export function ExplicacionPermiso({
   recurso,
@@ -78,8 +73,6 @@ export function ExplicacionPermiso({
   const colores = useColores();
   const info = INFO_RECURSOS[recurso];
   const esBloqueado = estado === 'bloqueado';
-  const caminoExacto =
-    Platform.OS === 'ios' ? info.caminoAjustesIOS : info.caminoAjustesAndroid;
 
   return (
     <View
@@ -111,23 +104,13 @@ export function ExplicacionPermiso({
           <View style={styles.rowIcon}>
             <Icono name="lock-closed" size={16} color={colores.peligro} />
             <Text style={[styles.bloqueadoTitulo, { color: colores.peligro }]}>
-              Permiso bloqueado en este dispositivo ({Platform.OS})
+              Permiso bloqueado
             </Text>
           </View>
           <Text style={[styles.bloqueadoTexto, { color: colores.texto }]}>
-            El diálogo del sistema ya no puede mostrarse automáticamente. Para habilitarlo,
-            seguí este camino en los Ajustes de tu teléfono:
-          </Text>
-          <Text
-            style={[
-              styles.caminoTexto,
-              {
-                color: colores.peligro,
-                backgroundColor: colores.superficie,
-                borderColor: colores.borde,
-              },
-            ]}>
-            {caminoExacto}
+            El permiso fue denegado y el diálogo del sistema ya no se mostrará
+            automáticamente. Podés habilitarlo manualmente entrando a los Ajustes de la
+            aplicación en tu teléfono.
           </Text>
           <Boton
             titulo="Abrir Ajustes"
@@ -228,14 +211,6 @@ const styles = StyleSheet.create({
   bloqueadoTexto: {
     fontSize: 13,
     lineHeight: 18,
-  },
-  caminoTexto: {
-    fontSize: 12,
-    fontWeight: '700',
-    fontFamily: FuenteMono,
-    padding: 10,
-    borderRadius: 8,
-    borderWidth: 1,
   },
   alternativaBox: {
     borderTopWidth: 1,
