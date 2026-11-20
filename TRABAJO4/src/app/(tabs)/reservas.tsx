@@ -150,7 +150,7 @@ export default function MisReservasScreen() {
             titulo="Explorar Catálogo"
             variante="secundario"
             icono="book-outline"
-            onPress={() => router.push('/index')}
+            onPress={() => router.push('/')}
           />
         </View>
       ) : (
