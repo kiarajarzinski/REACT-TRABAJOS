@@ -1,6 +1,15 @@
 import { Camera } from 'expo-camera';
 import * as Linking from 'expo-linking';
-import * as Notifications from 'expo-notifications';
+import {
+  AndroidImportance,
+  cancelScheduledNotificationAsync,
+  getPermissionsAsync,
+  requestPermissionsAsync,
+  SchedulableTriggerInputTypes,
+  scheduleNotificationAsync,
+  setNotificationChannelAsync,
+  setNotificationHandler,
+} from 'expo-notifications';
 import { Platform } from 'react-native';
 
 import { Colores } from '../constants/tema';
@@ -37,7 +46,7 @@ export const INFO_RECURSOS: Record<RecursoPermiso, InfoRecurso> = {
   },
 };
 
-Notifications.setNotificationHandler({
+setNotificationHandler({
   handleNotification: async () => ({
     shouldShowBanner: true,
     shouldShowList: true,
@@ -52,10 +61,10 @@ Notifications.setNotificationHandler({
  */
 export async function asegurarCanalPrestamos(): Promise<void> {
   if (Platform.OS === 'android') {
-    await Notifications.setNotificationChannelAsync('prestamos', {
+    await setNotificationChannelAsync('prestamos', {
       name: 'Préstamos y devoluciones',
       description: 'Recordatorios de devolución y avisos de lista de espera de Biblioteca IPF',
-      importance: Notifications.AndroidImportance.HIGH,
+      importance: AndroidImportance.HIGH,
       vibrationPattern: [0, 250, 250, 250],
       lightColor: Colores.primario,
     });
@@ -85,7 +94,7 @@ export async function consultarPermisoRecurso(
       };
     }
 
-    const res = await Notifications.getPermissionsAsync();
+    const res = await getPermissionsAsync();
     return {
       recurso,
       estado: calcularEstadoPermiso(res.granted, res.canAskAgain),
@@ -111,7 +120,7 @@ export async function solicitarPermisoRecurso(
   }
 
   await asegurarCanalPrestamos();
-  await Notifications.requestPermissionsAsync();
+  await requestPermissionsAsync();
   return consultarPermisoRecurso('notificaciones');
 }
 
@@ -129,14 +138,14 @@ export async function programarRecordatorioDevolucion(
   isbn: string,
 ): Promise<string> {
   await asegurarCanalPrestamos();
-  const id = await Notifications.scheduleNotificationAsync({
+  const id = await scheduleNotificationAsync({
     content: {
       title: 'Recordatorio de devolución · Biblioteca IPF',
       body: `Recordá devolver "${tituloLibro}" antes de la fecha límite.`,
       data: { isbn },
     },
     trigger: {
-      type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+      type: SchedulableTriggerInputTypes.TIME_INTERVAL,
       seconds: 15,
       channelId: 'prestamos',
     },
@@ -148,7 +157,7 @@ export async function cancelarNotificacionProgramada(
   notificacionId: string,
 ): Promise<void> {
   try {
-    await Notifications.cancelScheduledNotificationAsync(notificacionId);
+    await cancelScheduledNotificationAsync(notificacionId);
   } catch {
     // Si ya se disparó o no existe, ignoramos el error de cancelación
   }
@@ -171,14 +180,14 @@ export async function notificarTurnoDisponible(
 
   try {
     await asegurarCanalPrestamos();
-    await Notifications.scheduleNotificationAsync({
+    await scheduleNotificationAsync({
       content: {
         title: 'Tu libro ya está disponible · Biblioteca IPF',
         body: `Ya podés pasar por el mostrador a retirar "${tituloLibro}".`,
         data: { isbn },
       },
       trigger: {
-        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+        type: SchedulableTriggerInputTypes.TIME_INTERVAL,
         seconds: 1,
         channelId: 'prestamos',
       },

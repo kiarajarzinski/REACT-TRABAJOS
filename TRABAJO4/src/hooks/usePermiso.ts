@@ -34,12 +34,6 @@ export function usePermiso(recurso: RecursoPermiso): ResultadoUsePermiso {
 
   useEffect(() => {
     let activo = true;
-    setDetalle({
-      recurso,
-      estado: 'cargando',
-      status: 'undetermined',
-      canAskAgain: true,
-    });
 
     consultarPermisoRecurso(recurso).then((actualizado) => {
       if (activo) {
@@ -66,10 +60,12 @@ export function usePermiso(recurso: RecursoPermiso): ResultadoUsePermiso {
     await abrirAjustesSistema();
   }, []);
 
+  const esMismoRecurso = detalle.recurso === recurso;
+
   return {
-    estado: detalle.estado,
-    status: detalle.status,
-    canAskAgain: detalle.canAskAgain,
+    estado: esMismoRecurso ? detalle.estado : 'cargando',
+    status: esMismoRecurso ? detalle.status : 'undetermined',
+    canAskAgain: esMismoRecurso ? detalle.canAskAgain : true,
     pedir,
     abrirAjustes,
     recargar,
