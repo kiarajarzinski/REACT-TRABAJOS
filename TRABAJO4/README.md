@@ -6,8 +6,6 @@ Aplicación desarrollada con **React Native**, **Expo SDK 58** (`expo ~58.0.26`)
 - **TP 2**: Expo Router (`Tabs`, `Stack` anidado, modales, `<Redirect>`, `+not-found`, `Stack.Protected`), estructuras de datos `Pila` y `Cola` con campos privados `#items` y sin `shift()`.
 - **TP 3**: permisos móviles en contexto (`expo-camera` y `expo-notifications`), pantalla previa con único botón *“Continuar”*, actualización con `AppState` + `useFocusEffect`, canal Android `"prestamos"` y caminos alternativos para que la app nunca se bloquee.
 
-> 📄 El análisis detallado sobre nuestro código (**Partes B a E**) se encuentra en [RESPUESTAS.md](./RESPUESTAS.md).
-
 ---
 
 ## 1. Cómo ejecutar el proyecto
@@ -27,7 +25,7 @@ Para el acceso de personal en `/login`, las credenciales fijas de prueba son:
 
 ---
 
-## 2. Árbol de carpetas de `src/app` y navegadores (Requisito A1 y F2.3)
+## 2. Árbol de carpetas de `src/app` y navegadores 
 
 ```text
 src/
@@ -129,8 +127,7 @@ src/
 
 ---
 
-## 4. Tabla de permisos (Requisito F2.3)
-
+## 4. Tabla de permisos 
 | Recurso | Módulo de Expo | ¿Cuándo se pide? | Alternativa si se deniega o bloquea |
 | :--- | :--- | :--- | :--- |
 | **Cámara** | `expo-camera` | Recién cuando la persona abre `/escanear`, toca **“Continuar”** para abrir `/permisos/camara` y confirma **“Continuar”**. | Ingresar manualmente el ISBN de 13 dígitos en el campo de texto de `/escanear`. |
@@ -138,7 +135,7 @@ src/
 
 ---
 
-## 5. Deep links de prueba (Requisito C3 y F2.3)
+## 5. Deep links de prueba 
 
 En una development build se usa el esquema `bibliotecaipf://`, y en **Expo Go** el equivalente `exp://<IP_LOCAL>:8081/--/...`:
 
@@ -153,7 +150,7 @@ En una development build se usa el esquema `bibliotecaipf://`, y en **Expo Go** 
 
 ---
 
-## 6. Verificación de TypeScript y ESLint (Requisito F2.5)
+## 6. Verificación de TypeScript y ESLint 
 
 Salida obtenida al ejecutar los chequeos en `TRABAJO4/`:
 
@@ -167,13 +164,5 @@ Salida obtenida al ejecutar los chequeos en `TRABAJO4/`:
 
 ---
 
-## 7. Checklist de capturas para entrega (Requisito F2.4)
+## 7. Checklist de capturas para entrega 
 
-- [ ] Catálogo cargando, con error (botón Reintentar) y con datos.
-- [ ] Buscador (`/buscar?q=`).
-- [ ] Detalle inexistente (`/libro/123`).
-- [ ] Reserva con ejemplares (préstamo 7 días) y sin ejemplares (lista de espera con posición).
-- [ ] Escáner en sus cuatro estados (`cargando`, `preguntable`, `concedido`, `bloqueado`).
-- [ ] Notificación local recibida a los 15 segundos.
-- [ ] Mostrador antes y después de “Entregar al siguiente”.
-- [ ] Pantalla 404 (`+not-found.tsx`).
