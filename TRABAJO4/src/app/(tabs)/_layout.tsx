@@ -26,7 +26,11 @@ export default function TabsLayout() {
           title: 'Catálogo',
           headerShown: false,
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="book" size={size} color={color} />
+            <Ionicons
+              name="book"
+              size={size}
+              color={typeof color === 'string' ? color : Colores.primario}
+            />
           ),
         }}
       />
@@ -36,7 +40,11 @@ export default function TabsLayout() {
           title: 'Mis reservas',
           tabBarBadge: badgeReservas > 0 ? badgeReservas : undefined,
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="bookmark" size={size} color={color} />
+            <Ionicons
+              name="bookmark"
+              size={size}
+              color={typeof color === 'string' ? color : Colores.primario}
+            />
           ),
         }}
       />

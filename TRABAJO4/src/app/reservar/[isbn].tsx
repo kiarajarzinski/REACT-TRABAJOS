@@ -48,7 +48,7 @@ export default function ConfirmarReservaScreen() {
           <Boton
             titulo="Volver al Catálogo"
             variante="primario"
-            onPress={() => router.dismissTo('/')}
+            onPress={() => router.dismissTo('/index')}
           />
         </View>
       </Pantalla>

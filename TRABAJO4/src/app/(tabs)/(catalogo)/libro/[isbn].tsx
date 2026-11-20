@@ -59,7 +59,7 @@ export default function DetalleLibroScreen() {
             titulo="Volver al Catálogo"
             variante="primario"
             icono="book-outline"
-            onPress={() => router.replace('/')}
+            onPress={() => router.replace('/index')}
           />
         </View>
       </Pantalla>
