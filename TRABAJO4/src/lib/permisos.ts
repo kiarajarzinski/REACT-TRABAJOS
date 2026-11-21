@@ -12,7 +12,6 @@ import {
 } from 'expo-notifications';
 import { Platform } from 'react-native';
 
-import { Colores } from '../constants/tema';
 import type { EstadoPermiso, RecursoPermiso } from '../types';
 
 export type DetallePermiso = {
@@ -61,13 +60,16 @@ setNotificationHandler({
  */
 export async function asegurarCanalPrestamos(): Promise<void> {
   if (Platform.OS === 'android') {
-    await setNotificationChannelAsync('prestamos', {
-      name: 'Préstamos y devoluciones',
-      description: 'Recordatorios de devolución y avisos de lista de espera de Biblioteca IPF',
-      importance: AndroidImportance.HIGH,
-      vibrationPattern: [0, 250, 250, 250],
-      lightColor: Colores.primario,
-    });
+    try {
+      await setNotificationChannelAsync('prestamos', {
+        name: 'Préstamos y devoluciones',
+        description:
+          'Recordatorios de devolución y avisos de lista de espera de Biblioteca IPF',
+        importance: AndroidImportance.HIGH,
+      });
+    } catch {
+      // Si el entorno (como Expo Go) restringe alguna propiedad del canal, continuamos
+    }
   }
 }
 
@@ -114,14 +116,18 @@ export async function consultarPermisoRecurso(
 export async function solicitarPermisoRecurso(
   recurso: RecursoPermiso,
 ): Promise<DetallePermiso> {
-  if (recurso === 'camara') {
-    await Camera.requestCameraPermissionsAsync();
-    return consultarPermisoRecurso('camara');
-  }
+  try {
+    if (recurso === 'camara') {
+      await Camera.requestCameraPermissionsAsync();
+      return consultarPermisoRecurso('camara');
+    }
 
-  await asegurarCanalPrestamos();
-  await requestPermissionsAsync();
-  return consultarPermisoRecurso('notificaciones');
+    await asegurarCanalPrestamos();
+    await requestPermissionsAsync();
+    return consultarPermisoRecurso('notificaciones');
+  } catch {
+    return consultarPermisoRecurso(recurso);
+  }
 }
 
 export async function abrirAjustesSistema(): Promise<void> {
