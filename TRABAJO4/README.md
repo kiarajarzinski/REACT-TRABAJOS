@@ -164,5 +164,40 @@ Salida obtenida al ejecutar los chequeos en `TRABAJO4/`:
 
 ---
 
-## 7. Checklist de capturas para entrega 
+## 7. Capturas 
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/9be75bb9-385b-4074-9c8a-977006a78574" />
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/007bdab8-10f2-404e-8b15-e4faf41ed855" />
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/bea17e82-bbe7-40fe-ab59-2634ae7a297a" />
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/e77e025c-16fd-4c51-9c61-847b8caedc63" />
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/3013b7b2-9260-4bdc-8e9b-0bdfe9cbd652" />
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/36f93e3d-2fba-439d-ab39-5f59bdf8eede" />
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/053977c9-d7c6-4ccd-90d1-a236f5bd1ca8" />
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/589dda80-374a-466c-8248-212bbf8b81b6" />
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/4db04303-5860-468a-9778-3c6139462ec3" />
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/da8e349e-5638-4d7f-8f0a-1f53dfb6922c" />
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/b5711614-1c4e-4615-a7f6-10247198bf99" />
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/2b6156fa-1389-4aad-870a-de636e39d1fd" />
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/db622c3f-cacd-40db-8d9a-9ec1a00f0977" />
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/16b166c5-ffe7-4cee-be4a-a4aa5dadfcc5" />
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/fa07b787-002d-4cd0-a7a4-a73cdc6efc3f" />
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/21e12dcc-ac2f-4e40-b571-7dabb1da5df7" />
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/ded86d72-6132-46b3-924c-de38bc2da697" />
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/7529a8ab-2361-45cc-b34c-73bab7b243bf" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
