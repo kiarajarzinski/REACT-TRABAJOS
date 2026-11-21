@@ -9,11 +9,9 @@ Aplicación desarrollada con **React Native**, **Expo** y **Expo Router** para q
 - **Mínimo privilegio y Photo Picker del sistema**: para elegir una foto existente se utiliza `ImagePicker.launchImageLibraryAsync` **sin pedir permiso de galería ni declarar `READ_MEDIA_IMAGES`**.
 - **La app nunca se bloquea**: cada permiso cuenta con su camino alternativo (código de aula a mano, foto desde el selector del sistema, sector elegido manualmente y bandeja interna de avisos en `/avisos`).
 
-> 📄 Las respuestas teóricas y ejercicios de las **Partes A a F** se encuentran en el archivo [RESPUESTAS.md](./RESPUESTAS.md).
-
 ---
 
-## 1. Árbol de carpetas de `src/app` y organización del proyecto (Requisito G1, G3 y G5.3)
+## 1. Árbol de carpetas de `src/app` y organización del proyecto 
 
 ```text
 TRABAJO3/
@@ -53,7 +51,7 @@ TRABAJO3/
         └── reportes.ts              # Store reactivo de reportes, borrador, avisos y simulación a 10s
 ```
 
-### Correspondencia entre archivos y URLs requeridas (G1)
+### Correspondencia entre archivos y URLs requeridas 
 
 | URL requerida | Archivo en `src/app/` | Tipo de navegación |
 | :--- | :--- | :--- |
@@ -70,7 +68,7 @@ TRABAJO3/
 
 ---
 
-## 2. Configuración de `app.json` comentada y mínimo privilegio (Requisito G3 y G5.3)
+## 2. Configuración de `app.json` comentada y mínimo privilegio 
 
 A continuación se detalla el bloque de configuración de permisos en `app.json`, aplicando textos de propósito con el molde **“Usamos tu [dato] para [beneficio concreto]”** (pauta 5.1.1 de Apple) y el principio de **mínimo privilegio**:
 
@@ -136,7 +134,7 @@ A continuación se detalla el bloque de configuración de permisos en `app.json`
 }
 ```
 
-### Justificación de cada permiso en `blockedPermissions` (G3)
+### Justificación de cada permiso en `blockedPermissions` 
 
 1. **`android.permission.RECORD_AUDIO`**: `expo-camera` e `expo-image-picker` suelen incluirlo por defecto por si la app graba video con sonido. Como “Mantenimiento IPF” solo lee códigos QR y toma fotografías estáticas, se elimina por mínimo privilegio.
 2. **`android.permission.SYSTEM_ALERT_WINDOW`**: permiso especial para superponer vistas sobre otras aplicaciones; innecesario en nuestra app.
@@ -146,7 +144,7 @@ A continuación se detalla el bloque de configuración de permisos en `app.json`
 
 ---
 
-## 3. Tabla de permisos del sistema (Requisito G5.3)
+## 3. Tabla de permisos del sistema 
 
 | Recurso | Módulo de Expo | ¿Cuándo se pide? (En contexto) | Camino alternativo si se deniega o bloquea |
 | :--- | :--- | :--- | :--- |
@@ -158,7 +156,7 @@ A continuación se detalla el bloque de configuración de permisos en `app.json`
 
 ---
 
-## 4. Guía rápida para la Defensa Oral (Requisito G6)
+## 4. Preguntas para defensa
 
 1. **¿Qué código decide entre “Continuar” y “Abrir Ajustes” y qué campo de la respuesta lo decide?**
    - En `src/lib/permisos.ts` (`calcularEstado`) y `src/components/TarjetaPermiso.tsx` (`ExplicacionPermiso`): cuando `granted` es `false`, el campo que lo decide es **`canAskAgain`**. Si `canAskAgain === true`, el estado es `'preguntable'` y el botón dice **“Continuar”** (`pedir()`); si `canAskAgain === false`, el estado es `'bloqueado'` y el botón dice **“Abrir Ajustes”** (`Linking.openSettings()`).
@@ -175,7 +173,7 @@ A continuación se detalla el bloque de configuración de permisos en `app.json`
 
 ---
 
-## 5. Ejecución del proyecto y capturas (G5.3 y G5.4)
+## 5. Ejecución del proyecto y capturas
 
 ```bash
 cd TRABAJO3
@@ -183,9 +181,33 @@ npx expo start
 ```
 
 ### Capturas de prueba
-- [ ] Escáner en sus cuatro estados (`cargando`, `preguntable`, `concedido`, `bloqueado`).
-- [ ] Ubicación concedida (precisa / aproximada) y denegada (sector elegido a mano).
-- [ ] Foto elegida desde el selector del sistema sin permiso de galería.
-- [ ] Notificación local recibida a los 10 segundos al tocar *“Simular resolución”*.
-- [ ] Panel de permisos (`/permisos`) antes y después de volver de Ajustes.
-- [ ] Captura del diálogo del sistema en una *development build* mostrando el texto de propósito propio.
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/f3067e42-70f9-4125-a409-275a71859d2f" />
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/22634465-bdbf-453c-ae31-adc11b2f2076" />
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/a138943f-8b0f-4af9-8836-5f7d8dafc109" />
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/1c739c87-7fb1-4f4d-a48c-9838318a38b1" />
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/41710a4c-10ff-41d7-8110-8a720b01c4a9" />
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/c03e4b40-5547-4c7e-ad40-a03b96f19717" />
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/8dd4729e-fa68-45ec-9ce9-4f30fe6a728f" />
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/28cafe15-8f02-4235-b495-0f203185ea49" />
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/01afa2f9-408b-4e00-8f49-0a4fc66118f0" />
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/8c50f10c-9969-49e2-a008-ad3855f92850" />
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/3aa5a39c-efb4-4f73-9414-29b9bbcc976e" />
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/33db78bf-7553-45c9-bb0d-03881f9060b2" />
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/10d4e07d-2912-44bb-9898-7b889246889f" />
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/b445e921-f5ac-4984-a3ba-989795d4dcb0" />
+<img width="720" height="1600" alt="image" src="https://github.com/user-attachments/assets/5d9989e7-f8fb-44a4-b977-46e9a48e65e0" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
