@@ -91,13 +91,15 @@ Notifications.setNotificationHandler({
  */
 export async function asegurarCanalReportes(): Promise<void> {
   if (Platform.OS === 'android') {
-    await Notifications.setNotificationChannelAsync('reportes', {
-      name: 'Resolución de reportes',
-      description: 'Avisos cuando un desperfecto reportado cambia a estado resuelto',
-      importance: Notifications.AndroidImportance.HIGH,
-      vibrationPattern: [0, 250, 250, 250],
-      lightColor: '#0A9484',
-    });
+    try {
+      await Notifications.setNotificationChannelAsync('reportes', {
+        name: 'Resolución de reportes',
+        description: 'Avisos cuando un desperfecto reportado cambia a estado resuelto',
+        importance: Notifications.AndroidImportance.HIGH,
+      });
+    } catch {
+      // Continuar incluso si el entorno restringe alguna opción del canal
+    }
   }
 }
 
@@ -133,13 +135,11 @@ export async function consultarPermisoRecurso(
       let matiz: string | null = null;
       if (res.granted) {
         if (Platform.OS === 'android' && androidAccuracy) {
-          matiz = `accuracy: ${androidAccuracy} (${
-            androidAccuracy === 'coarse' ? 'aproximada' : 'precisa'
-          })`;
+          matiz = `accuracy: ${androidAccuracy} (${androidAccuracy === 'coarse' ? 'aproximada' : 'precisa'
+            })`;
         } else if (Platform.OS === 'ios' && iosAccuracy) {
-          matiz = `accuracy: ${iosAccuracy} (${
-            iosAccuracy === 'reduced' ? 'aproximada' : 'precisa'
-          })`;
+          matiz = `accuracy: ${iosAccuracy} (${iosAccuracy === 'reduced' ? 'aproximada' : 'precisa'
+            })`;
         } else {
           matiz = esAproximada ? 'ubicación aproximada' : 'ubicación precisa';
         }
@@ -179,9 +179,8 @@ export async function consultarPermisoRecurso(
 
     let matiz: string | null = 'Photo Picker del sistema (no requiere permiso)';
     if (res.granted && privileges) {
-      matiz = `accessPrivileges: ${privileges} (${
-        esLimitado ? 'fotos seleccionadas' : 'todas las fotos'
-      })`;
+      matiz = `accessPrivileges: ${privileges} (${esLimitado ? 'fotos seleccionadas' : 'todas las fotos'
+        })`;
     }
 
     return {
@@ -207,25 +206,29 @@ export async function consultarPermisoRecurso(
 export async function solicitarPermisoRecurso(
   recurso: RecursoPermiso
 ): Promise<DetallePermiso> {
-  if (recurso === 'camara') {
-    await Camera.requestCameraPermissionsAsync();
-    return consultarPermisoRecurso('camara');
-  }
+  try {
+    if (recurso === 'camara') {
+      await Camera.requestCameraPermissionsAsync();
+      return consultarPermisoRecurso('camara');
+    }
 
-  if (recurso === 'ubicacion') {
-    await Location.requestForegroundPermissionsAsync();
-    return consultarPermisoRecurso('ubicacion');
-  }
+    if (recurso === 'ubicacion') {
+      await Location.requestForegroundPermissionsAsync();
+      return consultarPermisoRecurso('ubicacion');
+    }
 
-  if (recurso === 'notificaciones') {
-    // Requisito G2.5: En Android crear el canal "reportes" ANTES de pedir el permiso
-    await asegurarCanalReportes();
-    await Notifications.requestPermissionsAsync();
-    return consultarPermisoRecurso('notificaciones');
-  }
+    if (recurso === 'notificaciones') {
+      // Requisito G2.5: En Android crear el canal "reportes" ANTES de pedir el permiso
+      await asegurarCanalReportes();
+      await Notifications.requestPermissionsAsync();
+      return consultarPermisoRecurso('notificaciones');
+    }
 
-  await ImagePicker.requestMediaLibraryPermissionsAsync();
-  return consultarPermisoRecurso('fotos');
+    await ImagePicker.requestMediaLibraryPermissionsAsync();
+    return consultarPermisoRecurso('fotos');
+  } catch {
+    return consultarPermisoRecurso(recurso);
+  }
 }
 
 export async function abrirAjustesSistema(): Promise<void> {
